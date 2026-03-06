@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ronald G. Roldan Jr. · MSc · IT Professor · animated modal</title>
+  <!-- Tailwind + Font Awesome 6 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- AOS library -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    /* theme variables (unchanged) */
+    :root {
+      --bg-color: #f8fafc;
+      --text-color: #0f172a;
+      --glass-bg: rgba(255, 255, 255, 0.5);
+      --glass-border: rgba(255, 255, 255, 0.6);
+      --glass-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+      --card-bg: rgba(255, 255, 255, 0.6);
+      --navbar-bg: rgba(255, 255, 255, 0.65);
+      --blur-amount: 14px;
+      --timeline-accent: #3b82f6;
+      --accent-gradient: linear-gradient(135deg, #3b82f6, #2dd4bf);
+    }
+
+    body.dark {
+      --bg-color: #0b1120;
+      --text-color: #e9edf5;
+      --glass-bg: rgba(17, 25, 40, 0.6);
+      --glass-border: rgba(71, 85, 105, 0.6);
+      --glass-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
+      --card-bg: rgba(30, 41, 59, 0.6);
+      --navbar-bg: rgba(15, 23, 42, 0.7);
+      --timeline-accent: #60a5fa;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+      padding: 1rem;
+      line-height: 1.6;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* parallax layers (unchanged) */
+    .parallax-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 120%;
+      pointer-events: none;
+      z-index: -5;
+      will-change: transform;
+    }
+    .parallax-layer {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-repeat: repeat;
+      background-size: cover;
+      will-change: transform;
+    }
+    .layer1 {
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(59,130,246,0.08) 0%, transparent 20%),
+        radial-gradient(circle at 80% 70%, rgba(45,212,191,0.08) 0%, transparent 25%);
+      background-size: 100% 100%, 200% 200%;
+      top: 0;
+    }
+    .layer2 {
+      background-image: 
+        repeating-linear-gradient(45deg, rgba(59,130,246,0.02) 0px, rgba(59,130,246,0.02) 2px, transparent 2px, transparent 8px),
+        repeating-linear-gradient(135deg, rgba(45,212,191,0.02) 0px, rgba(45,212,191,0.02) 3px, transparent 3px, transparent 12px);
+      background-size: 80px 80px, 120px 120px;
+      opacity: 0.5;
+      top: 0;
+    }
+    .parallax-shapes {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 120%;
+      pointer-events: none;
+      z-index: -4;
+    }
+    .shape {
+      position: absolute;
+      background: var(--timeline-accent);
+      filter: blur(56px);
+      opacity: 0.08;
+      border-radius: 50%;
+    }
+    .shape1 {
+      width: 400px; height: 400px;
+      left: 5%; top: 10%;
+      background: #3b82f6;
+    }
+    .shape2 {
+      width: 600px; height: 600px;
+      right: -10%; bottom: 20%;
+      background: #2dd4bf;
+      opacity: 0.06;
+    }
+
+    section, footer {
+      scroll-margin-top: 90px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* glass morphism (unchanged) */
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--blur-amount));
+      -webkit-backdrop-filter: blur(var(--blur-amount));
+      border: 1px solid var(--glass-border);
+      border-radius: 2rem;
+      box-shadow: var(--glass-shadow);
+    }
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(calc(var(--blur-amount) - 2px));
+      -webkit-backdrop-filter: blur(calc(var(--blur-amount) - 2px));
+      border: 1px solid var(--glass-border);
+      border-radius: 2rem;
+      box-shadow: var(--glass-shadow);
+      transition: all 0.25s ease;
+    }
+    .glass-card:hover {
+      box-shadow: 0 24px 48px -12px rgba(0, 119, 255, 0.2);
+      border-color: rgba(255,255,255,0.8);
+    }
+    .navbar-glass {
+      background: var(--navbar-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      position: sticky;
+      top: 1rem;
+      z-index: 50;
+      border-radius: 3rem;
+    }
+
+    @keyframes slideLeft {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .skills-marquee {
+      display: flex;
+      width: max-content;
+      animation: slideLeft 38s linear infinite;
+    }
+    .skills-marquee:hover {
+      animation-play-state: paused;
+    }
+    .skill-tag {
+      background: var(--glass-bg);
+      backdrop-filter: blur(4px);
+      border: 1px solid var(--glass-border);
+      padding: 0.7rem 1.8rem;
+      border-radius: 60px;
+      font-size: 1rem;
+      white-space: nowrap;
+      margin-right: 1.5rem;
+      box-shadow: var(--glass-shadow);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      transition: 0.2s;
+      font-weight: 500;
+    }
+    .skill-tag:hover {
+      background: rgba(255,255,255,0.25);
+      transform: scale(1.02) translateY(-2px);
+    }
+
+    /* timeline (unchanged) */
+    .timeline-item {
+      position: relative;
+      padding-left: 2.2rem;
+      margin-bottom: 2rem;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: 0.3rem;
+      top: 0.6rem;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--timeline-accent);
+      border: 3px solid var(--glass-border);
+      z-index: 2;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    }
+    .timeline-item::after {
+      content: '';
+      position: absolute;
+      left: 0.9rem;
+      top: 2rem;
+      width: 3px;
+      height: calc(100% + 0.2rem);
+      background: linear-gradient(to bottom, var(--timeline-accent), transparent 85%);
+      border-radius: 2px;
+    }
+    .timeline-item:last-child::after {
+      display: none;
+    }
+
+    .theme-toggle {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 3rem;
+      padding: 0.4rem 1.2rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .clickable-link {
+      text-decoration: underline 2px transparent;
+      text-underline-offset: 5px;
+      transition: text-decoration-color 0.2s;
+    }
+    .clickable-link:hover {
+      text-decoration-color: var(--timeline-accent);
+    }
+
+    .map-container {
+      overflow: hidden;
+      border-radius: 2rem;
+      border: 2px solid var(--glass-border);
+      height: 240px;
+      width: 100%;
+    }
+    .map-container iframe {
+      width: 100%;
+      height: 100%;
+      pointer-events: auto;
+    }
+
+    .profile-photo {
+      width: 160px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 4px solid var(--glass-border);
+      box-shadow: var(--glass-shadow), 0 10px 25px -5px rgba(59,130,246,0.3);
+      transition: 0.3s;
+    }
+    .profile-photo:hover {
+      transform: scale(1.02) rotate(1deg);
+    }
+
+    /* certificate grid */
+    .cert-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+    .cert-thumb {
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      border-radius: 1.5rem;
+      border: 2px solid var(--glass-border);
+      background: var(--glass-bg);
+      transition: 0.2s;
+      width: 100%;
+      height: 120px;
+      box-shadow: var(--glass-shadow);
+      cursor: pointer;
+    }
+    .cert-thumb:hover {
+      transform: scale(1.02) translateY(-3px);
+      border-color: #3b82f6;
+    }
+
+    /* ---------- ANIMATED MODAL ---------- */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(12px);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.25s ease-in-out;
+    }
+    .modal.active {
+      display: flex;
+      opacity: 1;
+    }
+    .modal-content {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 2rem;
+      border: 3px solid var(--glass-border);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+      transform: scale(0.85);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* springy effect */
+    }
+    .modal.active .modal-content {
+      transform: scale(1);
+    }
+    .modal-close {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid white;
+      border-radius: 3rem;
+      padding: 0.8rem 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1000;
+      color: white;
+      transition: background 0.2s;
+    }
+    .modal-close:hover {
+      background: rgba(255,255,255,0.3);
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- PARALLAX LAYERS -->
+  <div class="parallax-bg" id="parallaxContainer">
+    <div class="parallax-layer layer1" id="layer1"></div>
+    <div class="parallax-layer layer2" id="layer2"></div>
+  </div>
+  <div class="parallax-shapes" id="shapesLayer">
+    <div class="shape shape1" id="shape1"></div>
+    <div class="shape shape2" id="shape2"></div>
+  </div>
+
+  <!-- MODAL with smooth open/close animation -->
+  <div id="certModal" class="modal" onclick="if(event.target===this) closeModal()">
+    <span class="modal-close" onclick="closeModal()"><i class="fas fa-times mr-2"></i>close</span>
+    <img id="modalImage" class="modal-content" src="" alt="certificate large">
+  </div>
+
+  <!-- NAVBAR (same) -->
+  <nav class="navbar-glass max-w-7xl mx-auto my-4 px-7 py-3 flex items-center justify-between flex-wrap gap-4" data-aos="fade-down">
+    <div class="flex items-center gap-3">
+      <span class="text-2xl font-extrabold bg-gradient-to-r from-indigo-500 to-cyan-400 bg-clip-text text-transparent">RGR<span class="text-sm font-light text-gray-400 ml-1">jr.</span></span>
+      <span class="hidden sm:inline text-sm font-medium opacity-70 border-l border-white/30 pl-3">IT Professor · researcher</span>
+    </div>
+    <div class="hidden md:flex items-center gap-10 text-sm font-medium">
+      <a href="#profile" class="hover:text-indigo-400 transition-all hover:scale-105">Profile</a>
+      <a href="#experience" class="hover:text-indigo-400 transition-all hover:scale-105">Experience</a>
+      <a href="#projects" class="hover:text-indigo-400 transition-all hover:scale-105">Projects</a>
+      <a href="#teaching" class="hover:text-indigo-400 transition-all hover:scale-105">Teaching</a>
+      <a href="#certificates" class="hover:text-indigo-400 transition-all hover:scale-105">Certificates</a>
+      <a href="#publications" class="hover:text-indigo-400 transition-all hover:scale-105">Research</a>
+      <a href="#contact" class="hover:text-indigo-400 transition-all hover:scale-105">Contact</a>
+    </div>
+    <div class="flex items-center gap-3">
+      <button id="themeToggle" class="theme-toggle flex items-center gap-2 px-5 py-2 text-sm shadow-md">
+        <i id="themeIcon" class="fas fa-moon"></i>
+        <span class="hidden sm:inline">theme</span>
+      </button>
+      <div class="relative md:hidden">
+        <button id="mobileMenuBtn" class="glass-card p-3.5 rounded-full aspect-square flex items-center justify-center shadow-md">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div id="mobileDropdown" class="absolute right-0 mt-3 w-52 glass-card overflow-hidden hidden flex-col z-50 text-sm">
+          <a href="#profile" class="px-5 py-3 hover:bg-white/20 border-b border-white/10">Profile</a>
+          <a href="#experience" class="px-5 py-3 hover:bg-white/20 border-b border-white/10">Experience</a>
+          <a href="#projects" class="px-5 py-3 hover:bg-white/20 border-b border-white/10">Projects</a>
+          <a href="#teaching" class="px-5 py-3 hover:bg-white/20 border-b border-white/10">Teaching</a>
+          <a href="#certificates" class="px-5 py-3 hover:bg-white/20 border-b border-white/10">Certificates</a>
+          <a href="#publications" class="px-5 py-3 hover:bg-white/20 border-b border-white/10">Research</a>
+          <a href="#contact" class="px-5 py-3 hover:bg-white/20">Contact</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto space-y-8">
+
+    <!-- PROFILE (exact copy) -->
+    <section id="profile" class="glass-card p-7 md:p-9" data-aos="fade-up" data-aos-duration="800">
+      <div class="flex flex-col md:flex-row gap-9 items-start">
+        <div class="md:w-7/12 space-y-5">
+          <h1 class="text-5xl md:text-6xl font-black leading-tight bg-gradient-to-r from-indigo-400 via-sky-400 to-teal-400 bg-clip-text text-transparent">RONALD G. ROLDAN JR</h1>
+          <p class="text-2xl font-light opacity-90 mt-1">INFORMATION TECHNOLOGY</p>
+          <p class="leading-relaxed opacity-95 max-w-2xl text-base">
+            To obtain a position in a growth-oriented organization where I can utilize my expertise in IT project management, system development, and research advising to lead projects, deliver high-quality outputs on time, and contribute to the organization's efficiency and innovation.
+          </p>
+          <div class="flex flex-wrap gap-3 text-sm">
+            <span class="glass px-5 py-2.5 rounded-full shadow-sm"><i class="fas fa-phone-alt mr-2 text-indigo-400"></i>09057669976</span>
+            <a href="mailto:Ronaldroldan101@gmail.com" class="glass px-5 py-2.5 rounded-full clickable-link flex items-center hover:bg-white/20"><i class="fas fa-envelope mr-2 text-indigo-400"></i>Ronaldroldan101@gmail.com</a>
+            <a href="https://www.google.com/maps/search/?api=1&query=16+Esmeralda+St.+Brgy+Tandang+Sora+QC" target="_blank" class="glass px-5 py-2.5 rounded-full clickable-link flex items-center"><i class="fas fa-map-pin mr-2 text-indigo-400"></i>16 Esmeralda St. Brgy Tandang Sora QC</a>
+          </div>
+          <div class="flex flex-wrap gap-2 text-xs font-mono opacity-80">
+            <span class="glass px-4 py-2 rounded-full"><i class="far fa-calendar mr-1"></i>Age: 28 · DOB: February 3, 1997</span>
+            <span class="glass px-4 py-2 rounded-full"><i class="fas fa-flag mr-1"></i>Filipino</span>
+            <span class="glass px-4 py-2 rounded-full"><i class="fas fa-cross mr-1"></i>Christian</span>
+            <span class="glass px-4 py-2 rounded-full"><i class="fas fa-heart mr-1"></i>Single</span>
+            <span class="glass px-4 py-2 rounded-full"><i class="fas fa-ruler mr-1"></i>Height: 5'5" · 65 kg</span>
+          </div>
+        </div>
+        <div class="md:w-5/12 space-y-6">
+          <div class="flex justify-center md:justify-end">
+            <img src="photo.png" alt="Ronald G. Roldan Jr." class="profile-photo ring-4 ring-indigo-400/30" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <div class="hidden text-sm text-gray-400">[photo placeholder]</div>
+          </div>
+          <div class="glass p-6 rounded-3xl">
+            <h2 class="text-lg font-semibold border-b border-white/20 pb-2 mb-4 flex items-center"><i class="fas fa-graduation-cap mr-3 text-indigo-400"></i>EDUCATION</h2>
+            <ul class="space-y-4 text-sm">
+              <li class="flex gap-3"><span class="font-bold w-24">2015-2019</span> <span><strong>BESTLINK COLLEGE OF THE PHL.</strong><br>Bachelor of Science in Information Technology</span></li>
+              <li class="flex gap-3"><span class="font-bold w-24">2019-2022</span> <span><strong>BESTLINK COLLEGE OF THE PHL.</strong><br>Certificate of Professional Education</span></li>
+              <li class="flex gap-3"><span class="font-bold w-24">2022-Ongoing</span> <span><strong>POLYTECHNIC UNIVERSITY OF THE PHL.</strong><br>Master of Information Technology (9 units)</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- MAP -->
+      <div class="mt-8" data-aos="zoom-in-up" data-aos-delay="100">
+        <h3 class="text-base font-medium mb-3 flex items-center gap-2"><i class="fas fa-map-marked-alt text-indigo-400 text-lg"></i> Brgy Tandang Sora, Quezon City — interactive map</h3>
+        <div class="map-container rounded-[2rem] shadow-2xl">
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15436.788725108315!2d121.025471!3d14.675416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b7b7b3b3b3b3%3A0x3b3b3b3b3b3b3b3b!2sTandang%20Sora%2C%20Quezon%20City%2C%20Metro%20Manila!5e0!3m2!1sen!2sph!4v1711000000000!5m2!1sen!2sph"
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS (Cisco) -->
+    <div class="glass-card p-6 overflow-hidden" data-aos="fade-right">
+      <h2 class="text-2xl font-light mb-5 flex items-center"><i class="fas fa-code mr-3 text-indigo-400"></i>SKILLS</h2>
+      <div class="relative w-full overflow-hidden">
+        <div class="skills-marquee">
+          <span class="skill-tag"><i class="fab fa-html5 text-orange-500"></i> Web Development (HTML, CSS, JavaScript, PHP)</span>
+          <span class="skill-tag"><i class="fas fa-code text-green-500"></i> Programming (C, Java, C++)</span>
+          <span class="skill-tag"><i class="fas fa-database text-blue-400"></i> SQL & Database Management</span>
+          <span class="skill-tag"><i class="fas fa-cogs text-gray-400"></i> System Analysis and Design</span>
+          <span class="skill-tag"><i class="fas fa-network-wired text-purple-400"></i> Hardware and Network Troubleshooting</span>
+          <span class="skill-tag"><i class="fab fa-trello text-blue-600"></i> Scrum Master and Agile Practices</span>
+          <span class="skill-tag"><i class="fas fa-tasks text-emerald-400"></i> Project Management & Leadership</span>
+          <span class="skill-tag"><i class="fas fa-network-wired text-cyan-400"></i> Cisco (Networking)</span>
+          <span class="skill-tag"><i class="fab fa-html5 text-orange-500"></i> Web Development (HTML, CSS, JavaScript, PHP)</span>
+          <span class="skill-tag"><i class="fas fa-code text-green-500"></i> Programming (C, Java, C++)</span>
+          <span class="skill-tag"><i class="fas fa-database text-blue-400"></i> SQL & DBMS</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORK + PROJECTS -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <section id="experience" class="lg:col-span-2 glass-card p-7" data-aos="fade-up" data-aos-delay="50">
+        <h2 class="text-2xl font-light border-b border-white/20 pb-3 mb-5 flex items-center"><i class="fas fa-briefcase mr-3 text-indigo-400"></i>WORK EXPERIENCE (Bestlink College)</h2>
+        <div class="space-y-2">
+          <div class="timeline-item">
+            <div class="flex flex-wrap items-center justify-between">
+              <h3 class="font-semibold text-xl">IT INSTRUCTOR</h3>
+              <span class="text-xs glass px-4 py-1.5 rounded-full">2019–2025</span>
+            </div>
+            <p class="text-sm opacity-80 mt-1">Advised and presented research papers locally and internationally (Kuala Lumpur, Malaysia). Developed and managed multiple IT Capstone and ERP projects (HRIS, Financial, Freight, and Hospital Management Systems). Delivered resource speaking engagements on BSIT research agenda and project development. Module developer and panelist for IT capstone defenses.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="flex flex-wrap items-center justify-between">
+              <h3 class="font-semibold text-xl">BSIT Research Coordinator</h3>
+              <span class="text-xs glass px-4 py-1.5 rounded-full">2023–2025</span>
+            </div>
+            <p class="text-sm opacity-80 mt-1">Coordinated research initiatives, supervised capstone tracks, ensured quality standards across all IT research. Led research colloquium.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="flex flex-wrap items-center justify-between">
+              <h3 class="font-semibold text-xl">BSIT Research Adviser</h3>
+              <span class="text-xs glass px-4 py-1.5 rounded-full">2019–2025</span>
+            </div>
+            <p class="text-sm opacity-80 mt-1">Advised capstone & research projects: HRIS, Financial, Freight, Hospital Management Systems, Airport Mgt, Transport Network Vehicle System. 90% passed with excellence.</p>
+          </div>
+        </div>
+        <div class="mt-7 pt-4 border-t border-white/20 flex flex-wrap gap-2 text-xs">
+          <span class="glass px-4 py-2.5 rounded-full"><i class="fas fa-certificate mr-1 text-indigo-400"></i>AGILE DEVELOPMENT METHODOLOGY (2018)</span>
+          <span class="glass px-4 py-2.5 rounded-full"><i class="fas fa-vr-cardboard mr-1"></i>INFORMATION TECHNOLOGY IN MIXED REALITY (2018)</span>
+          <span class="glass px-4 py-2.5 rounded-full"><i class="fas fa-chalkboard mr-1"></i>FACULTY IN-SERVICE TRAININGS (2020,2022,2023,2024)</span>
+          <span class="glass px-4 py-2.5 rounded-full"><i class="fas fa-users mr-1"></i>INSET / FACULTY RESEARCH SEMINARS</span>
+        </div>
+      </section>
+
+      <section id="projects" class="glass-card p-7" data-aos="fade-up" data-aos-delay="100">
+        <h2 class="text-xl font-light border-b border-white/20 pb-3 flex items-center"><i class="fas fa-project-diagram mr-2 text-indigo-400"></i>KEY PROJECTS AND SUPERVISED</h2>
+        <ul class="mt-5 space-y-3 text-sm">
+          <li class="glass px-5 py-4 rounded-2xl flex items-center hover:translate-x-1 transition"><i class="fas fa-truck w-7 text-cyan-400"></i> Freight Management System</li>
+          <li class="glass px-5 py-4 rounded-2xl flex items-center hover:translate-x-1 transition"><i class="fas fa-coins w-7 text-yellow-400"></i> Financial Management System</li>
+          <li class="glass px-5 py-4 rounded-2xl flex items-center hover:translate-x-1 transition"><i class="fas fa-hospital w-7 text-red-400"></i> School and Hospital Management Systems</li>
+          <li class="glass px-5 py-4 rounded-2xl flex items-center hover:translate-x-1 transition"><i class="fas fa-plane w-7 text-indigo-400"></i> Airport Management System</li>
+          <li class="glass px-5 py-4 rounded-2xl flex items-center hover:translate-x-1 transition"><i class="fas fa-users w-7 text-green-400"></i> HRIS and Payroll Management Systems</li>
+          <li class="glass px-5 py-4 rounded-2xl flex items-center hover:translate-x-1 transition"><i class="fas fa-car w-7 text-blue-400"></i> Transport Network Vehicle System</li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- TEACHING + PUBLICATIONS -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <section id="teaching" class="lg:col-span-2 glass-card p-7" data-aos="fade-left">
+        <h2 class="text-2xl font-light mb-5 flex items-center"><i class="fas fa-chalkboard-teacher mr-3 text-indigo-400"></i>TEACHING EXPERIENCE</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+          <span class="glass px-4 py-3 rounded-xl text-center font-medium">COMPUTER PROGRAMMING 1</span>
+          <span class="glass px-4 py-3 rounded-xl text-center font-medium">WEB DEVELOPMENT 1 & 2</span>
+          <span class="glass px-4 py-3 rounded-xl text-center font-medium">SYSTEM INTEGRATION AND ARCHITECTURE</span>
+          <span class="glass px-4 py-3 rounded-xl text-center font-medium">BUSINESS PROCESS MANAGEMENT</span>
+          <span class="glass px-4 py-3 rounded-xl text-center font-medium">NETWORKING 1, ITSP2 WEB SECURITY</span>
+          <span class="glass px-4 py-3 rounded-xl text-center font-medium">DATABASE MANAGEMENT SYSTEM 1</span>
+          <span class="glass px-4 py-3 rounded-xl text-center font-medium">INFORMATION MANAGEMENT</span>
+          <span class="glass px-4 py-3 rounded-xl text-center font-medium">CAPSTONE PROJECT AND RESEARCH 1&2</span>
+        </div>
+        <div class="mt-5 text-sm opacity-80 flex items-center gap-3"><i class="fas fa-network-wired text-indigo-400"></i> Cisco (Networking 1) included in taught modules</div>
+      </section>
+
+      <section id="publications" class="glass-card p-7" data-aos="fade-left" data-aos-delay="70">
+        <h2 class="text-xl font-light border-b border-white/20 pb-3 flex items-center"><i class="fas fa-scroll mr-2 text-indigo-400"></i>PUBLICATIONS & RESEARCH</h2>
+        <div class="mt-4 space-y-4">
+          <div class="pub-badge glass p-4 rounded-2xl text-sm">
+            <i class="fas fa-file-alt text-indigo-300 mr-2"></i> Presented research papers locally and internationally (Kuala Lumpur, Malaysia)
+          </div>
+          <div class="pub-badge glass p-4 rounded-2xl text-sm">
+            <i class="fas fa-chart-line text-indigo-300 mr-2"></i> Faculty Research Seminars (multiple years)
+          </div>
+          <div class="mt-3 text-xs opacity-75 flex gap-2 flex-wrap">
+            <span class="bg-indigo-500/20 px-3 py-1 rounded-full">Research adviser</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- CERTIFICATE SECTION (animated modal) -->
+    <section id="certificates" class="glass-card p-7" data-aos="fade-up">
+      <h2 class="text-3xl font-light mb-6 flex items-center"><i class="fas fa-certificate mr-4 text-indigo-400"></i>professional certificates</h2>
+      <div class="cert-grid">
+        <!-- using the exact filenames you provided -->
+        <img src="/picture/certificate/12thMarch 2025.jpg" alt="12th March 2025" class="cert-thumb" onclick="openModal('/picture/certificate/12thMarch 2025.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=12th+Mar+2025'">
+        <img src="/picture/certificate/25thAugust 2024.jpg" alt="25th August 2024" class="cert-thumb" onclick="openModal('/picture/certificate/25thAugust 2024.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=25th+Aug+2024'">
+        <img src="/picture/certificate/25thNovember 2024.jpg" alt="25th November 2024" class="cert-thumb" onclick="openModal('/picture/certificate/25thNovember 2024.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=25th+Nov+2024'">
+        <img src="/picture/certificate/June302023 July22023.jpg" alt="June30-July2 2023" class="cert-thumb" onclick="openModal('/picture/certificate/June302023 July22023.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=June30-July2+2023'">
+        <img src="/picture/certificate/June302023toJuly22023.jpg" alt="June30-July2 2023" class="cert-thumb" onclick="openModal('/picture/certificate/June302023toJuly22023.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=June30-July2'">
+        <img src="/picture/certificate/May6to10 2025.jpg" alt="May6-10 2025" class="cert-thumb" onclick="openModal('/picture/certificate/May6to10 2025.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=May6-10+2025'">
+        <img src="/picture/certificate/May23-27 2023,.jpg" alt="May23-27 2023" class="cert-thumb" onclick="openModal('/picture/certificate/May23-27 2023,.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=May23-27+2023'">
+        <img src="/picture/certificate/October2-5 2023.jpg" alt="Oct2-5 2023" class="cert-thumb" onclick="openModal('/picture/certificate/October2-5 2023.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=Oct2-5+2023'">
+        <img src="/picture/certificate/September4-7 2023.jpg" alt="Sep4-7 2023" class="cert-thumb" onclick="openModal('/picture/certificate/September4-7 2023.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=Sep4-7+2023'">
+        <img src="/picture/certificate/September4-9 2023.jpg" alt="Sep4-9 2023" class="cert-thumb" onclick="openModal('/picture/certificate/September4-9 2023.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=Sep4-9+2023'">
+        <img src="/picture/certificate/September82023toSeptember82024.jpg" alt="Sep2023-Sep2024" class="cert-thumb" onclick="openModal('/picture/certificate/September82023toSeptember82024.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=Sep2023-2024'">
+      </div>
+      <p class="text-xs opacity-60 mt-5 flex items-center gap-2"><i class="fas fa-mouse-pointer"></i> click any certificate — smooth animated modal</p>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="contact" class="glass-card p-7 flex flex-col md:flex-row justify-between items-center gap-5" data-aos="fade-up">
+      <div class="flex gap-7 flex-wrap justify-center text-sm font-medium">
+        <span class="flex items-center"><i class="fas fa-phone-alt mr-3 text-indigo-400"></i>09057669976</span>
+        <a href="mailto:Ronaldroldan101@gmail.com" class="clickable-link flex items-center"><i class="fas fa-envelope mr-3 text-indigo-400"></i>Ronaldroldan101@gmail.com</a>
+        <a href="https://www.google.com/maps/search/?api=1&query=16+Esmeralda+St.+Brgy+Tandang+Sora+QC" target="_blank" class="clickable-link flex items-center"><i class="fas fa-map-pin mr-3 text-indigo-400"></i>16 Esmeralda St. Brgy Tandang Sora QC</a>
+        <span class="flex items-center"><i class="fas fa-info-circle mr-3 text-indigo-400"></i>Age 28 · Filipino · Single</span>
+      </div>
+      <span class="text-xs opacity-40"><i class="far fa-copyright"></i> 2025 RGR Jr. – glass morph · parallax bg</span>
+    </footer>
+  </main>
+
+  <!-- AOS and scripts -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    (function() {
+      AOS.init({ once: true, duration: 700, easing: 'ease-out-cubic' });
+
+      // theme toggle
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = document.getElementById('themeIcon');
+      const body = document.body;
+      function setTheme(theme) {
+        if (theme === 'dark') { body.classList.add('dark'); themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+        else { body.classList.remove('dark'); themeIcon.classList.remove('fa-sun'); themeIcon.classList.add('fa-moon'); }
+        localStorage.setItem('theme', theme);
+      }
+      const saved = localStorage.getItem('theme') || 'light';
+      setTheme(saved);
+      themeToggle.addEventListener('click', () => setTheme(body.classList.contains('dark') ? 'light' : 'dark'));
+
+      // mobile menu
+      const mobileBtn = document.getElementById('mobileMenuBtn');
+      const mobileDropdown = document.getElementById('mobileDropdown');
+      mobileBtn.addEventListener('click', (e) => { e.stopPropagation(); mobileDropdown.classList.toggle('hidden'); });
+      document.addEventListener('click', (e) => { if (!mobileBtn.contains(e.target) && !mobileDropdown.contains(e.target)) mobileDropdown.classList.add('hidden'); });
+
+      // smooth scroll
+      document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if(target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); mobileDropdown.classList.add('hidden'); }
+      }));
+
+      // parallax
+      const layer1 = document.getElementById('layer1');
+      const layer2 = document.getElementById('layer2');
+      const shape1 = document.getElementById('shape1');
+      const shape2 = document.getElementById('shape2');
+      window.addEventListener('scroll', function() {
+        const scrollY = window.scrollY;
+        const translate1 = scrollY * 0.15;
+        const translate2 = scrollY * 0.08;
+        const translateShape = scrollY * 0.03;
+        if (layer1) layer1.style.transform = `translateY(${translate1}px)`;
+        if (layer2) layer2.style.transform = `translateY(${translate2}px)`;
+        if (shape1) shape1.style.transform = `translateY(${translateShape}px)`;
+        if (shape2) shape2.style.transform = `translateY(${-translateShape * 0.5}px)`;
+      });
+
+      // ANIMATED MODAL functions
+      window.openModal = function(src) {
+        const modal = document.getElementById('certModal');
+        const modalImg = document.getElementById('modalImage');
+        modalImg.src = src;
+        modal.classList.add('active');
+        // small delay to ensure display:flex is applied before transition
+        setTimeout(() => modal.style.opacity = '1', 10);
+      };
+
+      window.closeModal = function() {
+        const modal = document.getElementById('certModal');
+        modal.style.opacity = '0';
+        // wait for fade out then remove active class (hide)
+        setTimeout(() => {
+          modal.classList.remove('active');
+          // reset opacity for next open (otherwise it stays 0)
+          modal.style.opacity = '';
+        }, 250); // match transition duration
+      };
+    })();
+  </script>
+</body>
+</html>

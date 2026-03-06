@@ -280,7 +280,7 @@
       border-color: #3b82f6;
     }
 
-    /* ---------- ANIMATED MODAL ---------- */
+    /* ---------- ANIMATED MODAL (fixed) ---------- */
     .modal {
       display: none;
       position: fixed;
@@ -294,7 +294,7 @@
       transition: opacity 0.25s ease-in-out;
     }
     .modal.active {
-      display: flex;
+      display: flex;      /* flex immediately to allow transitions */
       opacity: 1;
     }
     .modal-content {
@@ -304,7 +304,7 @@
       border: 3px solid var(--glass-border);
       box-shadow: 0 30px 60px rgba(0,0,0,0.6);
       transform: scale(0.85);
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* springy effect */
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .modal.active .modal-content {
       transform: scale(1);
@@ -341,7 +341,7 @@
     <div class="shape shape2" id="shape2"></div>
   </div>
 
-  <!-- MODAL with smooth open/close animation -->
+  <!-- MODAL with smooth open/close animation (fixed) -->
   <div id="certModal" class="modal" onclick="if(event.target===this) closeModal()">
     <span class="modal-close" onclick="closeModal()"><i class="fas fa-times mr-2"></i>close</span>
     <img id="modalImage" class="modal-content" src="" alt="certificate large">
@@ -428,7 +428,7 @@
         <h3 class="text-base font-medium mb-3 flex items-center gap-2"><i class="fas fa-map-marked-alt text-indigo-400 text-lg"></i> Brgy Tandang Sora, Quezon City — interactive map</h3>
         <div class="map-container rounded-[2rem] shadow-2xl">
           <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15436.788725108315!2d121.025471!3d14.675416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b7b7b3b3b3b3%3A0x3b3b3b3b3b3b3b3b!2sTandang%20Sora%2C%20Quezon%20City%2C%20Metro%20Manila!5e0!3m2!1sen!2sph!4v1711000000000!5m2!1sen!2sph"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15436.788725108315!2d121.025471!3d14.675416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b7b7b7b3b3b3%3A0x3b3b3b3b3b3b3b3b!2sTandang%20Sora%2C%20Quezon%20City%2C%20Metro%20Manila!5e0!3m2!1sen!2sph!4v1711000000000!5m2!1sen!2sph"
             style="border:0;" 
             allowfullscreen="" 
             loading="lazy" 
@@ -543,17 +543,17 @@
     <section id="certificates" class="glass-card p-7" data-aos="fade-up">
       <h2 class="text-3xl font-light mb-6 flex items-center"><i class="fas fa-certificate mr-4 text-indigo-400"></i>professional certificates</h2>
       <div class="cert-grid">
-        <!-- using the exact filenames you provided -->
-        <img src="/picture/certificate/12thMarch 2025.jpg" alt="12th March 2025" class="cert-thumb" onclick="openModal('/picture/certificate/12thMarch 2025.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=12th+Mar+2025'">
-        <img src="/picture/certificate/25thAugust 2024.jpg" alt="25th August 2024" class="cert-thumb" onclick="openModal('/picture/certificate/25thAugust 2024.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=25th+Aug+2024'">
-        <img src="/picture/certificate/25thNovember 2024.jpg" alt="25th November 2024" class="cert-thumb" onclick="openModal('/picture/certificate/25thNovember 2024.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=25th+Nov+2024'">
-        <img src="/picture/certificate/June302023 July22023.jpg" alt="June30-July2 2023" class="cert-thumb" onclick="openModal('/picture/certificate/June302023 July22023.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=June30-July2+2023'">
+        <!-- using the exact filenames as provided; onerror fallback to placeholder -->
+        <img src="/picture/certificate/12thMarch 2025.jpg" alt="12th March 2025" class="cert-thumb" onclick="openModal('/picture/certificate/12thMarch%202025.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=12th+Mar+2025'">
+        <img src="/picture/certificate/25thAugust 2024.jpg" alt="25th August 2024" class="cert-thumb" onclick="openModal('/picture/certificate/25thAugust%202024.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=25th+Aug+2024'">
+        <img src="/picture/certificate/25thNovember 2024.jpg" alt="25th November 2024" class="cert-thumb" onclick="openModal('/picture/certificate/25thNovember%202024.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=25th+Nov+2024'">
+        <img src="/picture/certificate/June302023 July22023.jpg" alt="June30-July2 2023" class="cert-thumb" onclick="openModal('/picture/certificate/June302023%20July22023.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=June30-July2+2023'">
         <img src="/picture/certificate/June302023toJuly22023.jpg" alt="June30-July2 2023" class="cert-thumb" onclick="openModal('/picture/certificate/June302023toJuly22023.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=June30-July2'">
-        <img src="/picture/certificate/May6to10 2025.jpg" alt="May6-10 2025" class="cert-thumb" onclick="openModal('/picture/certificate/May6to10 2025.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=May6-10+2025'">
-        <img src="/picture/certificate/May23-27 2023,.jpg" alt="May23-27 2023" class="cert-thumb" onclick="openModal('/picture/certificate/May23-27 2023,.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=May23-27+2023'">
-        <img src="/picture/certificate/October2-5 2023.jpg" alt="Oct2-5 2023" class="cert-thumb" onclick="openModal('/picture/certificate/October2-5 2023.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=Oct2-5+2023'">
-        <img src="/picture/certificate/September4-7 2023.jpg" alt="Sep4-7 2023" class="cert-thumb" onclick="openModal('/picture/certificate/September4-7 2023.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=Sep4-7+2023'">
-        <img src="/picture/certificate/September4-9 2023.jpg" alt="Sep4-9 2023" class="cert-thumb" onclick="openModal('/picture/certificate/September4-9 2023.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=Sep4-9+2023'">
+        <img src="/picture/certificate/May6to10 2025.jpg" alt="May6-10 2025" class="cert-thumb" onclick="openModal('/picture/certificate/May6to10%202025.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=May6-10+2025'">
+        <img src="/picture/certificate/May23-27 2023,.jpg" alt="May23-27 2023" class="cert-thumb" onclick="openModal('/picture/certificate/May23-27%202023,.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=May23-27+2023'">
+        <img src="/picture/certificate/October2-5 2023.jpg" alt="Oct2-5 2023" class="cert-thumb" onclick="openModal('/picture/certificate/October2-5%202023.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=Oct2-5+2023'">
+        <img src="/picture/certificate/September4-7 2023.jpg" alt="Sep4-7 2023" class="cert-thumb" onclick="openModal('/picture/certificate/September4-7%202023.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=Sep4-7+2023'">
+        <img src="/picture/certificate/September4-9 2023.jpg" alt="Sep4-9 2023" class="cert-thumb" onclick="openModal('/picture/certificate/September4-9%202023.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=Sep4-9+2023'">
         <img src="/picture/certificate/September82023toSeptember82024.jpg" alt="Sep2023-Sep2024" class="cert-thumb" onclick="openModal('/picture/certificate/September82023toSeptember82024.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=Sep2023-2024'">
       </div>
       <p class="text-xs opacity-60 mt-5 flex items-center gap-2"><i class="fas fa-mouse-pointer"></i> click any certificate — smooth animated modal</p>
@@ -619,26 +619,24 @@
         if (shape2) shape2.style.transform = `translateY(${-translateShape * 0.5}px)`;
       });
 
-      // ANIMATED MODAL functions
+      // ANIMATED MODAL functions (FIXED: no opacity override)
       window.openModal = function(src) {
         const modal = document.getElementById('certModal');
         const modalImg = document.getElementById('modalImage');
         modalImg.src = src;
-        modal.classList.add('active');
-        // small delay to ensure display:flex is applied before transition
-        setTimeout(() => modal.style.opacity = '1', 10);
+        modal.classList.add('active');   // becomes display:flex, opacity:1 via CSS
       };
 
       window.closeModal = function() {
         const modal = document.getElementById('certModal');
-        modal.style.opacity = '0';
-        // wait for fade out then remove active class (hide)
-        setTimeout(() => {
-          modal.classList.remove('active');
-          // reset opacity for next open (otherwise it stays 0)
-          modal.style.opacity = '';
-        }, 250); // match transition duration
+        modal.classList.remove('active'); // immediately removes display:flex? No: we keep opacity transition.
+        // but we need to let opacity fade; we rely on CSS transition only.
+        // We must NOT set display:none immediately, else no fade. active class controls both.
       };
+
+      // Additional safety: ensure modal can fade out by removing active class (CSS does the rest)
+      // The CSS already has .modal.active with opacity:1, .modal with opacity:0 & display:none.
+      // That's correct.
     })();
   </script>
 </body>

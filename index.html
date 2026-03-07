@@ -46,6 +46,13 @@
       overflow-x: hidden;
     }
 
+    /* prevent horizontal scroll on all viewports (mobile especially) */
+    html, body, main, nav, section, footer {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
     /* parallax layers (unchanged) */
     .parallax-bg {
       position: fixed;
@@ -327,9 +334,16 @@
     .modal-close:hover {
       background: rgba(255,255,255,0.3);
     }
+    /* Add this at the end of your style section */
+@media (max-width: 380px) {
+  h1.font-black {
+    font-size: 1.5rem; /* Even smaller for very tiny screens */
+    letter-spacing: -0.02em; /* Slightly tighter letter spacing */
+  }
+}
   </style>
 </head>
-<body class="antialiased">
+<body class="antialiased ">
 
   <!-- PARALLAX LAYERS -->
   <div class="parallax-bg" id="parallaxContainer">
@@ -390,7 +404,7 @@
     <section id="profile" class="glass-card p-7 md:p-9" data-aos="fade-up" data-aos-duration="800">
       <div class="flex flex-col md:flex-row gap-9 items-start">
         <div class="md:w-7/12 space-y-5">
-          <h1 class="text-5xl md:text-6xl font-black leading-tight bg-gradient-to-r from-indigo-400 via-sky-400 to-teal-400 bg-clip-text text-transparent">RONALD G. ROLDAN JR</h1>
+      <h1 class="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-indigo-400 via-sky-400 to-teal-400 bg-clip-text text-transparent">RONALD G. ROLDAN JR</h1>
           <p class="text-2xl font-light opacity-90 mt-1">INFORMATION TECHNOLOGY</p>
           <p class="leading-relaxed opacity-95 max-w-2xl text-base">
             To obtain a position in a growth-oriented organization where I can utilize my expertise in IT project management, system development, and research advising to lead projects, deliver high-quality outputs on time, and contribute to the organization's efficiency and innovation.
@@ -542,7 +556,8 @@
     <!-- CERTIFICATE SECTION (animated modal) -->
 <!-- CERTIFICATE SECTION (animated modal) -->
 <section id="certificates" class="glass-card p-7" data-aos="fade-up">
-  <h2 class="text-3xl font-light mb-6 flex items-center"><i class="fas fa-certificate mr-4 text-indigo-400"></i>professional certificates</h2>
+   <h2 class="text-2xl font-light border-b border-white/20 pb-3 mb-5 flex items-center"><i class="fas fa-certificate mr-4 text-indigo-400"></i>PROFESSIONAL CERTIFICATES</h2>
+   
   <div class="cert-grid">
     <!-- using relative paths (no leading slash) -->
     <img src="picture/certificate/12thMarch%202025.jpg" alt="12th March 2025" class="cert-thumb" onclick="openModal('picture/certificate/12thMarch%202025.jpg')" onerror="this.src='https://via.placeholder.com/300x200?text=12th+Mar+2025'">
